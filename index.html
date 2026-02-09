@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>로문 관리 시스템</title>
+
+  <!-- Bootstrap (CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+  <script defer src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+
+  <!-- Optional: DataTables (스크롤/헤더 고정 느낌을 내기 위해 사용 가능) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-dt@1.13.8/css/jquery.dataTables.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.8/js/jquery.dataTables.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="app.js"></script>
+</head>
+
+<body>
+  <!-- ====== TOP NAV ====== -->
+  <header class="topbar">
+    <div class="topbar-inner container-fluid">
+      <div class="brand">
+        <div class="brand-mark">IP</div>
+        <div class="brand-title">로문 관리 시스템</div>
+      </div>
+
+      <nav class="menu">
+        <a class="menu-item active" href="#">국내출원</a>
+        <div class="dropdown">
+          <a class="menu-item dropdown-toggle" data-toggle="dropdown" href="#" role="button">
+            해외출원 <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#">해외기본</a></li>
+            <li class="divider"></li>
+            <li><a href="#">해외출원</a></li>
+          </ul>
+        </div>
+        <a class="menu-item" href="#">이의심판</a>
+        <a class="menu-item" href="#">기타사건</a>
+        <a class="menu-item" href="#">기일관리</a>
+        <a class="menu-item" href="#">비용관리</a>
+        <a class="menu-item" href="#">연락처관리</a>
+
+        <div class="dropdown">
+          <a class="menu-item dropdown-toggle" data-toggle="dropdown" href="#" role="button">
+            그밖에 <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#">첨부서류관리</a></li>
+            <li class="divider"></li>
+            <li><a href="#">환경설정</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Lock로그</a></li>
+            <li class="divider"></li>
+            <li><a href="#">도움말</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="topbar-right">
+        <button class="icon-btn" title="홈">🏠</button>
+        <button class="icon-btn" title="설정">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====== CONTENT ====== -->
+  <main class="page">
+    <!-- Header Row: Title + Actions -->
+    <section class="page-head container-fluid">
+      <div class="page-title">
+        <div class="page-title-badge"></div>
+        <h2>국내출원검색</h2>
+      </div>
+
+      <div class="actions">
+        <!-- 신규 -->
+        <div class="dropdown">
+          <button class="btn btn-primary btn-pill dropdown-toggle" data-toggle="dropdown">
+            ✏️ 신규 <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li class="dropdown-header">내국</li>
+            <li><a href="#" data-new="pat-kr">특허</a></li>
+            <li><a href="#" data-new="util-kr">실용신안</a></li>
+            <li><a href="#" data-new="design-kr">디자인</a></li>
+            <li><a href="#" data-new="mark-kr">상표</a></li>
+            <li class="divider"></li>
+            <li class="dropdown-header">외국</li>
+            <li><a href="#" data-new="pat-fr">특허</a></li>
+            <li><a href="#" data-new="util-fr">실용신안</a></li>
+            <li><a href="#" data-new="design-fr">디자인</a></li>
+            <li><a href="#" data-new="mark-fr">상표</a></li>
+          </ul>
+        </div>
+
+        <button class="btn btn-default btn-pill" id="btnFieldSetting">⚙️ 항목설정</button>
+
+        <!-- 자료 -->
+        <div class="dropdown">
+          <button class="btn btn-default btn-pill dropdown-toggle" data-toggle="dropdown">
+            📄 자료 <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li><a href="#" id="btnExcel">엑셀변환</a></li>
+            <li class="divider"></li>
+            <li><a href="#" id="btnAutoCancel">자동취하사건 조회</a></li>
+            <li class="divider"></li>
+            <li><a href="#" id="btnDeleteSel">선택자료 삭제</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Search Panel -->
+    <section class="search-panel container-fluid">
+      <div class="search-grid">
+        <!-- Quick Search (left) -->
+        <div class="quick-card">
+          <div class="quick-head">
+            <div class="quick-title">Quick Search</div>
+            <div class="quick-help" title="검색 도움말">?</div>
+          </div>
+          <div class="quick-body">
+            <select class="form-control" id="quickType">
+              <option value="number">번호검색</option>
+              <option value="text">문자검색</option>
+            </select>
+            <div class="quick-input">
+              <input class="form-control" id="quickQuery" placeholder="검색어 입력" />
+              <button class="btn btn-default" id="btnQuickSearch">🔍</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Search (center) -->
+        <div class="advanced-card">
+          <div class="adv-row">
+            <div class="adv-label">기본검색</div>
+            <select class="form-control adv-select" id="baseField">
+              <option value="div">구분</option>
+              <option value="right">권리</option>
+              <option value="type">출원종류</option>
+              <option value="dept">부서</option>
+            </select>
+            <select class="form-control adv-select" id="baseValue">
+              <option value="">[선택]</option>
+              <option value="내국">내국</option>
+              <option value="외국">외국</option>
+              <option value="특허">특허</option>
+              <option value="상표">상표</option>
+              <option value="디자인">디자인</option>
+              <option value="실용신안">실용신안</option>
+            </select>
+            <div class="andnot">
+              <button class="btn btn-xs btn-toggle active" data-group="base" data-op="AND">AND</button>
+              <button class="btn btn-xs btn-toggle" data-group="base" data-op="NOT">NOT</button>
+            </div>
+          </div>
+
+          <div class="adv-row">
+            <div class="adv-label">일자검색</div>
+            <select class="form-control adv-select" id="dateField">
+              <option value="appDate">출원일</option>
+              <option value="regDate">등록일</option>
+              <option value="dueDate">사건마감일</option>
+            </select>
+            <div class="date-range">
+              <input class="form-control" type="date" id="fromDate" />
+              <span class="tilde">~</span>
+              <input class="form-control" type="date" id="toDate" />
+            </div>
+            <div class="andnot">
+              <button class="btn btn-xs btn-toggle active" data-group="date" data-op="AND">AND</button>
+              <button class="btn btn-xs btn-toggle" data-group="date" data-op="NOT">NOT</button>
+            </div>
+          </div>
+
+          <div class="adv-row">
+            <div class="adv-label">문자검색</div>
+            <select class="form-control adv-select" id="textField">
+              <option value="applicantNo">출원인관리번호</option>
+              <option value="agentNo">국내대리인관리번호</option>
+              <option value="appNo">출원번호</option>
+              <option value="applicant">출원인</option>
+              <option value="titleKo">국문명칭</option>
+              <option value="status">현재상태</option>
+            </select>
+            <input class="form-control adv-text" id="textValue" placeholder="검색어 입력" />
+            <div class="andnot">
+              <button class="btn btn-xs btn-toggle active" data-group="text" data-op="AND">AND</button>
+              <button class="btn btn-xs btn-toggle" data-group="text" data-op="NOT">NOT</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Query + Buttons (right) -->
+        <div class="query-card">
+          <div class="query-hint">검색조건식이 자동으로 표시되며, 수정 후 검색도 가능합니다.</div>
+          <textarea class="form-control query-box" id="queryBox" placeholder="예) (구분=내국) AND (권리=특허)"></textarea>
+
+          <div class="query-actions">
+            <button class="btn btn-danger btn-lg btn-block" id="btnSearch">🔎 검색</button>
+            <button class="btn btn-default btn-block" id="btnReset">↻ 초기화</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Count -->
+    <section class="countbar container-fluid">
+      표시 : <span id="viewCnt">0</span> /
+      검색 : <span id="searchCnt">0</span> /
+      전체 : <span id="allCnt">0</span>
+    </section>
+
+    <!-- Tabs + Table -->
+    <section class="results container-fluid">
+      <div class="tabbar">
+        <button class="tab active" data-tab="all">전체</button>
+        <button class="tab" data-tab="pat">특허</button>
+        <button class="tab" data-tab="mark">상표</button>
+        <button class="tab" data-tab="design">디자인</button>
+        <button class="tab" data-tab="util">실용신안</button>
+      </div>
+
+      <div class="table-wrap">
+        <table id="casesTable" class="display compact" style="width:100%">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="ckAll"></th>
+              <th>구분</th>
+              <th>권리</th>
+              <th>현재상태</th>
+              <th>출원인관리번호</th>
+              <th>출원인</th>
+              <th>출원일</th>
+              <th>출원번호</th>
+              <th>등록일</th>
+              <th>등록번호</th>
+              <th>국문명칭</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Simple Modal (Bootstrap) -->
+  <div id="msgModal" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">×</button>
+          <h4 class="modal-title" id="msgModalTitle">알림</h4>
+        </div>
+        <div class="modal-body">
+          <p id="msgModalBody" style="margin:0;"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
