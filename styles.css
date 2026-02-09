@@ -280,3 +280,38 @@ table.dataTable tbody td{
   .search-grid{ grid-template-columns: 1fr; }
   .brand{ min-width: 180px; }
 }
+
+/* topbar 밖에 뜨는 드롭다운 */
+.flyout-menu{
+  position: fixed;           /* topbar 밖에서 화면 기준으로 떠있게 */
+  top: 56px;                 /* topbar 높이(너는 56px로 잡아둠) */
+  left: 0;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid #d9e2ef;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.18);
+  padding: 8px 0;
+  z-index: 2000;
+
+  display: none;             /* 기본은 숨김 */
+}
+
+.flyout-item{
+  display: block;
+  padding: 12px 14px;
+  color: #1c2a3a;
+  text-decoration: none !important;
+  font-weight: 700;
+}
+
+.flyout-item:hover{
+  background: #f3f6fb;
+}
+
+.flyout-divider{
+  height: 1px;
+  background: #eef3fb;
+  margin: 6px 0;
+}
+
